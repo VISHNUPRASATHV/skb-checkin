@@ -2,18 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Super King's Bakery — Check-In &amp; Pay</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#5c2410" />
+  <title>Super King's Bakery — Rewards &amp; UPI Pay</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
     :root {
-      --primary: #5c2410;       /* Rich bakery chocolate brown */
-      --primary-dark: #3e1608;
-      --gold: #d99b26;          /* Crown gold */
+      --primary: #5c2410;
+      --primary-dark: #3b1507;
+      --gold: #d99b26;
       --gold-light: #fef3c7;
-      --ruby: #b91c1c;          /* Crown ruby accent */
+      --ruby: #b91c1c;
       --green: #15803d;
-      --bg: #fffaf0;            /* Warm cream background */
+      --wa: #25d366;
+      --bg: #fffaf0;
       --card: #ffffff;
       --text: #2b1810;
       --muted: #785a4a;
@@ -22,46 +24,62 @@
     * { box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
     body {
       margin: 0;
-      background: radial-gradient(circle at top, #fff7e0 0%, var(--bg) 60%, #f9efe0 100%);
+      background: radial-gradient(circle at top, #fff5d6 0%, var(--bg) 55%, #f7ead6 100%);
       color: var(--text);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 14px;
     }
     .card {
+      position: relative;
       width: 100%;
-      max-width: 420px;
+      max-width: 440px;
       background: var(--card);
-      border-radius: 20px;
-      padding: 24px 22px;
-      box-shadow: 0 12px 32px rgba(92, 36, 16, 0.12);
+      border-radius: 22px;
+      padding: 22px 20px;
+      box-shadow: 0 14px 36px rgba(92, 36, 16, 0.13);
       border: 1px solid var(--border);
       border-top: 5px solid var(--gold);
+      overflow: hidden;
+    }
+
+    /* Language Switch */
+    .lang-toggle {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: #fffbeb;
+      color: var(--primary);
+      border: 1.5px solid #f5d08a;
+      border-radius: 999px;
+      padding: 5px 11px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      width: auto;
+      margin: 0;
     }
 
     /* Header & Logo */
-    .brand-header {
-      text-align: center;
-      margin-bottom: 18px;
-    }
+    .brand-header { text-align: center; margin-bottom: 16px; }
     .logo-img {
-      width: 118px;
-      height: 118px;
+      width: 110px;
+      height: 110px;
       object-fit: contain;
       border-radius: 50%;
       background: #fff;
       padding: 4px;
-      box-shadow: 0 4px 14px rgba(92, 36, 16, 0.12);
-      margin-bottom: 10px;
+      box-shadow: 0 5px 16px rgba(92, 36, 16, 0.14);
+      margin-bottom: 8px;
     }
     .logo-fallback {
       display: none;
       width: 72px;
       height: 72px;
-      margin: 0 auto 10px;
+      margin: 0 auto 8px;
       border-radius: 50%;
       background: linear-gradient(135deg, #f59e0b, #b45309);
       color: #fff;
@@ -69,40 +87,23 @@
       font-size: 1.3rem;
       align-items: center;
       justify-content: center;
-      letter-spacing: 1px;
     }
-    h1 {
-      margin: 0;
-      font-size: 1.45rem;
-      color: var(--primary);
-      letter-spacing: 0.2px;
-    }
-    .address {
-      margin: 4px 0 0;
-      font-size: 0.82rem;
-      color: var(--muted);
-      font-weight: 500;
-    }
+    h1 { margin: 0; font-size: 1.42rem; color: var(--primary); }
+    .address { margin: 3px 0 0; font-size: 0.8rem; color: var(--muted); font-weight: 500; }
     .offer-pill {
       display: inline-block;
-      margin-top: 10px;
-      padding: 5px 12px;
+      margin-top: 9px;
+      padding: 5px 13px;
       border-radius: 999px;
-      background: var(--gold-light);
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
       color: var(--primary);
       font-size: 0.8rem;
       font-weight: 700;
-      border: 1px solid #f5d08a;
+      border: 1px solid #f5c869;
     }
 
-    /* Form Controls */
-    label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin: 12px 0 6px;
-      color: var(--primary);
-    }
+    /* Inputs & Buttons */
+    label { display: block; font-size: 0.84rem; font-weight: 600; margin: 11px 0 5px; color: var(--primary); }
     input {
       width: 100%;
       padding: 12px 14px;
@@ -113,81 +114,48 @@
       background: #fffdf9;
       color: var(--text);
     }
-    input:focus {
-      border-color: var(--gold);
-      box-shadow: 0 0 0 3px rgba(217, 155, 38, 0.16);
-    }
+    input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(217, 155, 38, 0.16); }
     button {
       width: 100%;
       padding: 13px;
-      margin-top: 14px;
+      margin-top: 12px;
       border: none;
       border-radius: 12px;
-      font-size: 1rem;
+      font-size: 0.98rem;
       font-weight: 700;
       cursor: pointer;
       background: var(--primary);
       color: #fff;
-      transition: opacity 0.15s ease;
+      transition: transform 0.08s ease, opacity 0.15s ease;
     }
-    button:active { opacity: 0.88; }
+    button:active { transform: scale(0.98); opacity: 0.92; }
     button:disabled { opacity: 0.55; cursor: not-allowed; }
     .btn-green { background: var(--green); }
+    .btn-wa { background: var(--wa); color: #fff; }
+    .btn-gold { background: linear-gradient(135deg, #f59e0b, #b45309); color: #fff; }
     .btn-outline {
       background: #fff;
       color: var(--primary);
       border: 1.5px solid var(--border);
-      margin-top: 10px;
+      margin-top: 9px;
       font-weight: 600;
     }
-    .hidden { display: none; }
-    .error {
-      color: var(--ruby);
-      font-size: 0.85rem;
-      margin-top: 8px;
-      text-align: center;
-      font-weight: 500;
-    }
-    .helper-text {
-      margin: 0 0 10px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.88rem;
-    }
+    .btn-sm { padding: 8px 12px; font-size: 0.82rem; margin-top: 6px; width: auto; }
+    .hidden { display: none !important; }
+    .error { color: var(--ruby); font-size: 0.84rem; margin-top: 8px; text-align: center; font-weight: 500; }
+    .helper-text { margin: 0 0 8px; text-align: center; color: var(--muted); font-size: 0.86rem; }
 
-    /* Loyalty Tracker */
-    .loyalty-box {
-      background: #fffbeb;
-      border: 1.5px solid #fde68a;
+    /* Banners */
+    .bday-banner {
+      background: linear-gradient(135deg, #fff1f2, #ffe4e6);
+      border: 1.5px solid #fb7185;
+      color: #9f1239;
       border-radius: 14px;
-      padding: 14px;
+      padding: 12px;
       text-align: center;
-      margin-bottom: 14px;
-    }
-    .stamps {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      margin: 10px 0;
-      flex-wrap: wrap;
-    }
-    .stamp {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      border: 2px dashed #d99b26;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      margin-bottom: 12px;
       font-weight: 700;
-      font-size: 0.85rem;
-      color: #b45309;
-      background: #fff;
-    }
-    .stamp.filled {
-      background: linear-gradient(135deg, #f59e0b, #b45309);
-      border: 2px solid #b45309;
-      color: #fff;
+      font-size: 0.9rem;
     }
     .reward-banner {
       background: #dcfce7;
@@ -196,45 +164,148 @@
       border-radius: 14px;
       padding: 12px;
       text-align: center;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
+      font-weight: 700;
+      font-size: 0.92rem;
+    }
+
+    /* Loyalty Card */
+    .loyalty-box {
+      background: linear-gradient(180deg, #fffbeb 0%, #fff7d6 100%);
+      border: 1.5px solid #f5d08a;
+      border-radius: 16px;
+      padding: 14px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .stamps { display: flex; justify-content: center; gap: 8px; margin: 10px 0; flex-wrap: wrap; }
+    .stamp {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 2px dashed #d99b26;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.88rem;
+      color: #b45309;
+      background: #fff;
+    }
+    .stamp.filled {
+      background: linear-gradient(135deg, #f59e0b, #b45309);
+      border: 2px solid #92400e;
+      color: #fff;
+      box-shadow: 0 3px 8px rgba(180, 83, 9, 0.28);
+    }
+
+    /* Quick Amount Chips */
+    .chips { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .chip {
+      flex: 1;
+      min-width: 60px;
+      padding: 7px 6px;
+      margin: 0;
+      border-radius: 10px;
+      background: #fff7ed;
+      color: var(--primary);
+      border: 1px solid #fed7aa;
+      font-size: 0.84rem;
       font-weight: 700;
     }
 
-    /* UPI Section */
+    /* UPI Box */
     .qr-wrap {
       display: flex;
       flex-direction: column;
       align-items: center;
       background: #fffdf9;
       border: 1.5px solid var(--border);
-      border-radius: 14px;
-      padding: 16px;
+      border-radius: 16px;
+      padding: 15px;
       margin-top: 12px;
     }
-    #qrcode {
-      padding: 10px;
-      background: #fff;
+    #qrcode { padding: 10px; background: #fff; border-radius: 10px; border: 1px solid #f3e8d8; }
+    .upi-id-text { margin-top: 9px; font-size: 0.88rem; color: var(--primary); font-family: monospace; font-weight: 700; }
+    .row-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; margin-top: 6px; }
+
+    /* Extra Links */
+    .extras { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+    .extra-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      text-decoration: none;
+      padding: 9px 8px;
       border-radius: 10px;
-      border: 1px solid #f3e8d8;
-    }
-    .upi-id-text {
-      margin-top: 10px;
-      font-size: 0.9rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      border: 1px solid var(--border);
       color: var(--primary);
-      font-family: monospace;
-      font-weight: 600;
-    }
-    .row-btns {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      width: 100%;
-      margin-top: 6px;
+      background: #fffdf9;
+      text-align: center;
     }
 
-    /* Admin / Birthday List */
+    /* Staff Portal */
+    .tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 12px; }
+    .tab-btn {
+      padding: 9px 4px;
+      margin: 0;
+      border-radius: 10px;
+      background: #f5ece0;
+      color: var(--primary);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .tab-btn.active { background: var(--primary); color: #fff; }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+    .stat-card {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+    }
+    .stat-num { font-size: 1.35rem; font-weight: 800; color: var(--primary); }
+    .stat-lbl { font-size: 0.72rem; color: var(--muted); font-weight: 600; }
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 11px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-top: 8px;
+      background: #fffdf9;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .badge-green { background: #dcfce7; color: #166534; }
+    .wa-pill {
+      background: var(--wa);
+      color: #fff;
+      text-decoration: none;
+      padding: 7px 11px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .section-title { font-size: 0.85rem; font-weight: 700; color: var(--primary); margin: 12px 0 4px; }
+    .scroll-box { max-height: 270px; overflow-y: auto; padding-right: 2px; }
+
+    /* Footer */
     .footer-link {
-      margin-top: 16px;
+      margin-top: 14px;
       font-size: 0.8rem;
       color: var(--muted);
       text-decoration: underline;
@@ -244,29 +315,22 @@
       width: auto;
       padding: 4px;
     }
-    .bday-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      margin-top: 10px;
-      background: #fffdf9;
-    }
-    .wa-btn {
-      background: #25d366;
-      color: #fff;
-      text-decoration: none;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      font-weight: 600;
+
+    /* Confetti Canvas */
+    #confettiCanvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
     }
   </style>
 </head>
 <body>
+  <canvas id="confettiCanvas"></canvas>
+
   <div class="card">
+    <button type="button" class="lang-toggle" id="langBtn" onclick="toggleLang()">தமிழ்</button>
+
     <div class="brand-header">
       <img
         src="logo.png"
@@ -277,71 +341,124 @@
       <div id="logoFallback" class="logo-fallback">SKB</div>
       <h1 id="shopTitle">Super King's Bakery</h1>
       <p class="address" id="shopAddress">Devanur Koot Road &bull; Since 2014</p>
-      <div class="offer-pill" id="shopSub">Visit 5 times &amp; get 10% OFF</div>
+      <div class="offer-pill" id="shopSub">👑 Visit 5 times &amp; get 10% OFF</div>
     </div>
 
     <!-- STEP 1: Phone Entry -->
     <div id="stepPhone">
-      <label for="phoneInput">Mobile Number</label>
+      <label for="phoneInput" data-i18n="phoneLabel">Mobile Number</label>
       <input id="phoneInput" type="tel" inputmode="numeric" maxlength="10" placeholder="Enter 10-digit mobile number" />
-      <button id="checkBtn" onclick="checkPhone()">Continue</button>
+      <button id="checkBtn" onclick="checkPhone()" data-i18n="continueBtn">Continue</button>
       <div id="phoneError" class="error"></div>
     </div>
 
-    <!-- STEP 2: New Customer Form -->
+    <!-- STEP 2: New Customer Registration -->
     <div id="stepRegister" class="hidden">
-      <p class="helper-text">First time here? Register once to collect visit rewards &amp; birthday treats!</p>
-      <label for="nameInput">Full Name</label>
+      <p class="helper-text" data-i18n="newCustMsg">First time here? Register once to collect visit rewards &amp; birthday treats!</p>
+      <label for="nameInput" data-i18n="nameLabel">Full Name</label>
       <input id="nameInput" type="text" placeholder="Your Name" />
-      <label for="dobInput">Date of Birth (for birthday wishes &amp; offers)</label>
+      <label for="dobInput" data-i18n="dobLabel">Date of Birth (for birthday gift)</label>
       <input id="dobInput" type="date" />
-      <button id="regBtn" onclick="registerCustomer()">Check In &amp; Pay</button>
-      <button class="btn-outline" onclick="resetFlow()">Back</button>
+      <button id="regBtn" onclick="registerCustomer()" data-i18n="regBtn">Check In &amp; Pay</button>
+      <button class="btn-outline" onclick="resetFlow()" data-i18n="backBtn">Back</button>
       <div id="regError" class="error"></div>
     </div>
 
-    <!-- STEP 3: Loyalty Status + UPI Payment -->
+    <!-- STEP 3: Loyalty Status + UPI Pay -->
     <div id="stepPay" class="hidden">
+      <div id="bdayBanner" class="bday-banner hidden">
+        🎂 Happy Birthday! Show this screen at the counter for a special birthday treat!
+      </div>
+
       <div id="rewardBanner" class="reward-banner hidden">
-        <div id="rewardText">Reward Unlocked! Show this screen at the counter.</div>
+        <div id="rewardText">🎉 Reward Unlocked! Show this screen at the counter.</div>
         <button class="btn-outline" style="margin-top:8px; padding:7px; font-size:0.8rem;" onclick="redeemReward()">
           Staff: Mark Discount Used
         </button>
       </div>
 
       <div class="loyalty-box">
-        <div id="welcomeMsg" style="font-weight:700; color:var(--primary);"></div>
+        <div id="welcomeMsg" style="font-weight:800; font-size:1.05rem; color:var(--primary);"></div>
         <div id="stampsContainer" class="stamps"></div>
-        <div id="visitInfo" style="font-size:0.85rem; color:var(--muted);"></div>
+        <div id="visitInfo" style="font-size:0.84rem; color:var(--muted); font-weight:500;"></div>
       </div>
 
-      <label for="amountInput">Bill Amount ₹ (Optional)</label>
+      <label for="amountInput" data-i18n="amountLabel">Bill Amount ₹ (Optional)</label>
       <input id="amountInput" type="number" inputmode="decimal" min="1" placeholder="Enter bill amount to pre-fill UPI" oninput="renderUPI()" />
+      <div class="chips">
+        <button type="button" class="chip" onclick="setAmount(50)">₹50</button>
+        <button type="button" class="chip" onclick="setAmount(100)">₹100</button>
+        <button type="button" class="chip" onclick="setAmount(200)">₹200</button>
+        <button type="button" class="chip" onclick="setAmount(500)">₹500</button>
+      </div>
 
       <div class="qr-wrap">
         <div id="qrcode"></div>
         <div class="upi-id-text" id="upiDisplay"></div>
         <a id="upiPayLink" style="width:100%; text-decoration:none;">
-          <button type="button" class="btn-green">Pay via UPI App</button>
+          <button type="button" class="btn-green" data-i18n="payBtn">Pay via UPI App</button>
         </a>
         <div class="row-btns">
-          <button type="button" class="btn-outline" onclick="copyUPI()" id="copyBtn">Copy UPI ID</button>
-          <button type="button" class="btn-outline" onclick="downloadQR()">Download QR</button>
+          <button type="button" class="btn-outline" onclick="copyUPI()" id="copyBtn" data-i18n="copyBtn">Copy UPI ID</button>
+          <button type="button" class="btn-outline" onclick="downloadQR()" data-i18n="dlBtn">Download QR</button>
         </div>
       </div>
 
-      <button class="btn-outline" onclick="resetFlow()">New Customer</button>
+      <div class="extras" id="extrasBar"></div>
+
+      <button class="btn-outline" onclick="resetFlow()" data-i18n="newCustBtn">New Customer</button>
     </div>
 
-    <!-- STAFF VIEW: Today's Birthdays -->
+    <!-- STAFF PORTAL (PIN Protected) -->
     <div id="stepAdmin" class="hidden">
-      <h2 style="font-size:1.1rem; margin:0 0 8px; color:var(--primary);">🎂 Today's Birthdays</h2>
-      <div id="birthdayList" style="font-size:0.9rem; color:var(--muted);">Loading...</div>
-      <button class="btn-outline" onclick="closeAdmin()">Back to Check-In</button>
+      <div class="tabs">
+        <button type="button" class="tab-btn active" id="tabCounterBtn" onclick="switchAdminTab('counter')">Counter</button>
+        <button type="button" class="tab-btn" id="tabBdayBtn" onclick="switchAdminTab('bday')">🎂 Birthdays</button>
+        <button type="button" class="tab-btn" id="tabSearchBtn" onclick="switchAdminTab('search')">Search</button>
+      </div>
+
+      <!-- TAB 1: Stats + Fast Counter Check-In -->
+      <div id="adminCounter">
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-num" id="statTotal">-</div><div class="stat-lbl">Total Customers</div></div>
+          <div class="stat-card"><div class="stat-num" id="statToday">-</div><div class="stat-lbl">Visits Today</div></div>
+          <div class="stat-card"><div class="stat-num" id="statReady">-</div><div class="stat-lbl">Discount Ready</div></div>
+          <div class="stat-card"><div class="stat-num" id="statRedeemed">-</div><div class="stat-lbl">Discounts Used</div></div>
+        </div>
+
+        <div class="section-title">⚡ Quick Counter Check-In</div>
+        <input id="staffPhone" type="tel" inputmode="numeric" maxlength="10" placeholder="Customer 10-digit mobile" />
+        <input id="staffSpend" type="number" inputmode="decimal" placeholder="Bill amount ₹ (optional)" style="margin-top:8px;" />
+        <button type="button" class="btn-gold" id="staffCheckBtn" onclick="staffQuickCheckIn()">Log Visit at Counter</button>
+        <div id="staffNewFields" class="hidden" style="margin-top:8px; padding:10px; background:#fffbeb; border-radius:12px; border:1px solid #fde68a;">
+          <div style="font-size:0.8rem; font-weight:700; color:var(--primary); margin-bottom:6px;">New Customer — Quick Register</div>
+          <input id="staffName" type="text" placeholder="Customer Name" />
+          <input id="staffDob" type="date" style="margin-top:8px;" />
+          <button type="button" class="btn-green" id="staffRegBtn" onclick="staffQuickRegister()">Save &amp; Log Visit #1</button>
+        </div>
+        <div id="staffResult" style="margin-top:10px;"></div>
+      </div>
+
+      <!-- TAB 2: Today & Next 7 Days Birthdays -->
+      <div id="adminBday" class="hidden">
+        <div class="section-title">🎉 Today's Birthdays</div>
+        <div id="todayBdayList" class="scroll-box" style="font-size:0.86rem; color:var(--muted);">Loading...</div>
+
+        <div class="section-title">🍰 Upcoming (Next 7 Days — Cake Pre-Order Offers)</div>
+        <div id="upcomingBdayList" class="scroll-box" style="font-size:0.86rem; color:var(--muted);">Loading...</div>
+      </div>
+
+      <!-- TAB 3: Customer Search -->
+      <div id="adminSearch" class="hidden">
+        <input id="searchInput" type="text" placeholder="Search by name or phone..." oninput="renderSearchList()" />
+        <div id="searchResults" class="scroll-box" style="margin-top:8px;"></div>
+      </div>
+
+      <button class="btn-outline" onclick="closeAdmin()">Exit Staff Portal</button>
     </div>
   </div>
 
-  <button class="footer-link" onclick="openAdmin()">Staff: Today's Birthdays</button>
+  <button class="footer-link" onclick="openAdmin()">🔐 Staff Portal (Counter &amp; Birthdays)</button>
 
   <script>
     // ================= SHOP CONFIGURATION =================
@@ -351,20 +468,109 @@
       SHOP_ADDRESS: 'Devanur Koot Road • Since 2014',
       UPI_ID: 'vvichuzz229-1@okaxis',
       LOYALTY_TARGET: 5,           // Must match LOYALTY_TARGET in Code.gs
-      DISCOUNT_TEXT: '10% OFF'     // Change to your preferred reward (e.g., "₹50 OFF" or "Free Pastry")
+      DISCOUNT_TEXT: '10% OFF',
+      SHOP_WHATSAPP: '',           // Optional: e.g., '919876543210' for 1-tap Cake Order button
+      GOOGLE_REVIEW_URL: ''        // Optional: paste your Google Maps review link here
     };
     // ======================================================
 
+    const I18N = {
+      en: {
+        toggle: 'தமிழ்',
+        sub: `👑 Visit ${CONFIG.LOYALTY_TARGET} times & get ${CONFIG.DISCOUNT_TEXT}`,
+        phoneLabel: 'Mobile Number',
+        phonePh: 'Enter 10-digit mobile number',
+        continueBtn: 'Continue',
+        newCustMsg: 'First time here? Register once to collect visit rewards & birthday treats!',
+        nameLabel: 'Full Name',
+        namePh: 'Your Name',
+        dobLabel: 'Date of Birth (for birthday gift)',
+        regBtn: 'Check In & Pay',
+        backBtn: 'Back',
+        amountLabel: 'Bill Amount ₹ (Optional)',
+        amountPh: 'Enter bill amount to pre-fill UPI',
+        payBtn: 'Pay via UPI App',
+        copyBtn: 'Copy UPI ID',
+        dlBtn: 'Download QR',
+        newCustBtn: 'New Customer'
+      },
+      ta: {
+        toggle: 'English',
+        sub: `👑 ${CONFIG.LOYALTY_TARGET} வருகைகளுக்கு ${CONFIG.DISCOUNT_TEXT} தள்ளுபடி`,
+        phoneLabel: 'மொபைல் எண்',
+        phonePh: '10 இலக்க மொபைல் எண்ணை உள்ளிடவும்',
+        continueBtn: 'தொடரவும்',
+        newCustMsg: 'முதல் முறையா? தள்ளுபடி மற்றும் பிறந்தநாள் பரிசுகளுக்கு ஒருமுறை பதிவு செய்யுங்கள்!',
+        nameLabel: 'முழு பெயர்',
+        namePh: 'உங்கள் பெயர்',
+        dobLabel: 'பிறந்த தேதி (பிறந்தநாள் பரிசுக்காக)',
+        regBtn: 'பதிவு செய்து செலுத்தவும்',
+        backBtn: 'பின்செல்',
+        amountLabel: 'பில் தொகை ₹ (விருப்பம்)',
+        amountPh: 'தொகையை உள்ளிடவும்',
+        payBtn: 'UPI ஆப் மூலம் செலுத்தவும்',
+        copyBtn: 'UPI நகலெடு',
+        dlBtn: 'QR பதிவிறக்கம்',
+        newCustBtn: 'புதிய வாடிக்கையாளர்'
+      }
+    };
+
+    let lang = 'en';
     let currentCustomer = null;
+    let activeStaffPin = null;
+    let cachedDashboard = null;
 
     document.getElementById('shopTitle').textContent = CONFIG.SHOP_NAME;
     document.getElementById('shopAddress').textContent = CONFIG.SHOP_ADDRESS;
-    document.getElementById('shopSub').textContent =
-      `👑 Visit ${CONFIG.LOYALTY_TARGET} times & get ${CONFIG.DISCOUNT_TEXT}`;
+    applyLang();
+    renderExtras();
 
     document.getElementById('phoneInput').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') checkPhone();
     });
+
+    function toggleLang() {
+      lang = lang === 'en' ? 'ta' : 'en';
+      applyLang();
+    }
+
+    function applyLang() {
+      const t = I18N[lang];
+      document.getElementById('langBtn').textContent = t.toggle;
+      document.getElementById('shopSub').textContent = t.sub;
+      document.getElementById('phoneInput').placeholder = t.phonePh;
+      document.getElementById('nameInput').placeholder = t.namePh;
+      document.getElementById('amountInput').placeholder = t.amountPh;
+      document.querySelectorAll('[data-i18n]').forEach((el) => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key]) el.textContent = t[key];
+      });
+    }
+
+    function renderExtras() {
+      const bar = document.getElementById('extrasBar');
+      bar.innerHTML = '';
+      if (CONFIG.SHOP_WHATSAPP) {
+        const cakeMsg = `Hi ${CONFIG.SHOP_NAME}, I would like to pre-order a custom cake!`;
+        const a = document.createElement('a');
+        a.className = 'extra-link';
+        a.href = `https://wa.me/${CONFIG.SHOP_WHATSAPP}?text=${encodeURIComponent(cakeMsg)}`;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.textContent = '🎂 Order Cake';
+        bar.appendChild(a);
+      }
+      if (CONFIG.GOOGLE_REVIEW_URL) {
+        const a = document.createElement('a');
+        a.className = 'extra-link';
+        a.href = CONFIG.GOOGLE_REVIEW_URL;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.textContent = '⭐ Rate Us on Google';
+        bar.appendChild(a);
+      }
+      bar.classList.toggle('hidden', bar.children.length === 0);
+    }
 
     async function apiCall(payload) {
       const res = await fetch(CONFIG.SCRIPT_URL, {
@@ -381,13 +587,15 @@
       errEl.textContent = '';
 
       if (phone.length !== 10) {
-        errEl.textContent = 'Please enter a valid 10-digit mobile number.';
+        errEl.textContent = lang === 'ta'
+          ? 'சரியான 10 இலக்க மொபைல் எண்ணை உள்ளிடவும்.'
+          : 'Please enter a valid 10-digit mobile number.';
         return;
       }
 
       const btn = document.getElementById('checkBtn');
       btn.disabled = true;
-      btn.textContent = 'Checking...';
+      btn.textContent = lang === 'ta' ? 'சரிபார்க்கிறது...' : 'Checking...';
 
       try {
         const data = await apiCall({ action: 'checkPhone', phone });
@@ -400,10 +608,10 @@
           errEl.textContent = data.message || 'Something went wrong.';
         }
       } catch (e) {
-        errEl.textContent = 'Connection error. Please ensure the Apps Script is deployed to "Anyone".';
+        errEl.textContent = 'Connection error. Ensure Apps Script is deployed as New Version.';
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Continue';
+        btn.textContent = I18N[lang].continueBtn;
       }
     }
 
@@ -415,13 +623,15 @@
       errEl.textContent = '';
 
       if (!name || !dob) {
-        errEl.textContent = 'Please enter both your name and date of birth.';
+        errEl.textContent = lang === 'ta'
+          ? 'பெயர் மற்றும் பிறந்த தேதியை உள்ளிடவும்.'
+          : 'Please enter both your name and date of birth.';
         return;
       }
 
       const btn = document.getElementById('regBtn');
       btn.disabled = true;
-      btn.textContent = 'Saving...';
+      btn.textContent = lang === 'ta' ? 'சேமிக்கிறது...' : 'Saving...';
 
       try {
         const data = await apiCall({ action: 'register', phone, name, dob });
@@ -435,13 +645,14 @@
         errEl.textContent = 'Network error. Please try again.';
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Check In & Pay';
+        btn.textContent = I18N[lang].regBtn;
       }
     }
 
     function showPaymentScreen(customer) {
       showSection('stepPay');
-      document.getElementById('welcomeMsg').textContent = `Welcome, ${customer.name}!`;
+      document.getElementById('welcomeMsg').textContent =
+        lang === 'ta' ? `வணக்கம், ${customer.name}!` : `Welcome, ${customer.name}!`;
 
       const stampsEl = document.getElementById('stampsContainer');
       stampsEl.innerHTML = '';
@@ -458,6 +669,9 @@
         ? `Visit #${customer.visitCount} — You unlocked ${CONFIG.DISCOUNT_TEXT}!`
         : `Visit #${customer.visitCount} — ${remaining} more visit(s) for ${CONFIG.DISCOUNT_TEXT}${visitNote}`;
 
+      const bdayBanner = document.getElementById('bdayBanner');
+      bdayBanner.classList.toggle('hidden', !customer.isBirthdayToday);
+
       const rewardBanner = document.getElementById('rewardBanner');
       if (customer.rewardUnlocked) {
         document.getElementById('rewardText').textContent =
@@ -467,7 +681,16 @@
         rewardBanner.classList.add('hidden');
       }
 
+      if (customer.rewardUnlocked || customer.isBirthdayToday) {
+        launchConfetti();
+      }
+
       document.getElementById('upiDisplay').textContent = CONFIG.UPI_ID;
+      renderUPI();
+    }
+
+    function setAmount(val) {
+      document.getElementById('amountInput').value = val;
       renderUPI();
     }
 
@@ -477,19 +700,18 @@
       if (amount && Number(amount) > 0) {
         upiUri += `&am=${encodeURIComponent(amount)}`;
       }
-
       document.getElementById('upiPayLink').href = upiUri;
 
       const qrEl = document.getElementById('qrcode');
       qrEl.innerHTML = '';
-      new QRCode(qrEl, { text: upiUri, width: 190, height: 190 });
+      new QRCode(qrEl, { text: upiUri, width: 185, height: 185 });
     }
 
     function copyUPI() {
       navigator.clipboard.writeText(CONFIG.UPI_ID);
       const btn = document.getElementById('copyBtn');
-      btn.textContent = 'Copied!';
-      setTimeout(() => (btn.textContent = 'Copy UPI ID'), 1800);
+      btn.textContent = 'Copied ✓';
+      setTimeout(() => (btn.textContent = I18N[lang].copyBtn), 1800);
     }
 
     function downloadQR() {
@@ -503,80 +725,285 @@
       a.click();
     }
 
-    async function redeemReward() {
-      const pin = prompt('Enter 4-digit Staff PIN to mark discount as redeemed:');
-      if (!pin || !currentCustomer) return;
+    async function redeemReward(phoneOverride) {
+      const pin = activeStaffPin || prompt('Enter 4-digit Staff PIN to mark discount as redeemed:');
+      const targetPhone = phoneOverride || (currentCustomer && currentCustomer.phone);
+      if (!pin || !targetPhone) return;
 
-      const data = await apiCall({
-        action: 'redeem',
-        phone: currentCustomer.phone,
-        pin
-      });
-
+      const data = await apiCall({ action: 'redeem', phone: targetPhone, pin });
       if (data.status === 'redeemed') {
-        currentCustomer.visitCount = data.visitCount;
-        currentCustomer.rewardUnlocked = data.rewardUnlocked;
-        showPaymentScreen(currentCustomer);
+        if (!phoneOverride && currentCustomer) {
+          currentCustomer.visitCount = data.visitCount;
+          currentCustomer.rewardUnlocked = data.rewardUnlocked;
+          showPaymentScreen(currentCustomer);
+        }
         alert('Discount redeemed and loyalty counter updated!');
+        if (activeStaffPin) refreshDashboard();
       } else {
         alert(data.message || 'Invalid PIN');
       }
     }
 
+    // ================= STAFF PORTAL =================
     async function openAdmin() {
       const pin = prompt('Enter 4-digit Staff PIN:');
       if (!pin) return;
 
+      activeStaffPin = pin;
       showSection('stepAdmin');
-      const listEl = document.getElementById('birthdayList');
-      listEl.textContent = "Checking today's birthdays...";
-
-      try {
-        const data = await apiCall({ action: 'birthdays', pin });
-        if (data.status !== 'ok') {
-          alert(data.message || 'Invalid PIN');
-          closeAdmin();
-          return;
-        }
-
-        if (!data.birthdays.length) {
-          listEl.textContent = `No customer birthdays today (${data.today}).`;
-          return;
-        }
-
-        listEl.innerHTML = '';
-        data.birthdays.forEach((b) => {
-          const msg = `Happy Birthday ${b.name}! 🎂🎉 Warm wishes from ${CONFIG.SHOP_NAME}, Devanur Koot Road! Drop by to celebrate with fresh cakes & sweets — enjoy a special birthday treat on us!`;
-          const waUrl = `https://wa.me/91${b.phone}?text=${encodeURIComponent(msg)}`;
-
-          const item = document.createElement('div');
-          item.className = 'bday-item';
-
-          const info = document.createElement('div');
-          const strong = document.createElement('strong');
-          strong.textContent = b.name;
-          const meta = document.createElement('div');
-          meta.style.fontSize = '0.8rem';
-          meta.style.color = '#785a4a';
-          meta.textContent = `${b.phone} • ${b.visitCount} visits`;
-          info.append(strong, meta);
-
-          const link = document.createElement('a');
-          link.className = 'wa-btn';
-          link.href = waUrl;
-          link.target = '_blank';
-          link.rel = 'noopener noreferrer';
-          link.textContent = 'WhatsApp';
-
-          item.append(info, link);
-          listEl.appendChild(item);
-        });
-      } catch (e) {
-        listEl.textContent = 'Failed to load birthdays.';
+      switchAdminTab('counter');
+      const ok = await refreshDashboard();
+      if (!ok) {
+        activeStaffPin = null;
+        closeAdmin();
       }
     }
 
+    async function refreshDashboard() {
+      try {
+        const data = await apiCall({ action: 'dashboard', pin: activeStaffPin });
+        if (data.status !== 'ok') {
+          alert(data.message || 'Invalid Staff PIN');
+          return false;
+        }
+        cachedDashboard = data;
+        document.getElementById('statTotal').textContent = data.stats.totalCustomers;
+        document.getElementById('statToday').textContent = data.stats.visitsToday;
+        document.getElementById('statReady').textContent = data.stats.readyToRedeem;
+        document.getElementById('statRedeemed').textContent = data.stats.totalRedeemed;
+
+        renderBirthdays(data);
+        renderSearchList();
+        return true;
+      } catch (e) {
+        alert('Could not load Staff Portal. Make sure you deployed the updated Code.gs as New Version.');
+        return false;
+      }
+    }
+
+    function switchAdminTab(tab) {
+      ['counter', 'bday', 'search'].forEach((t) => {
+        const cap = t.charAt(0).toUpperCase() + t.slice(1);
+        document.getElementById('admin' + cap).classList.toggle('hidden', t !== tab);
+        document.getElementById('tab' + cap + 'Btn').classList.toggle('active', t === tab);
+      });
+    }
+
+    async function staffQuickCheckIn() {
+      const phone = document.getElementById('staffPhone').value.replace(/\D/g, '');
+      const spend = Number(document.getElementById('staffSpend').value) || 0;
+      const resEl = document.getElementById('staffResult');
+      const newBox = document.getElementById('staffNewFields');
+      resEl.innerHTML = '';
+      newBox.classList.add('hidden');
+
+      if (phone.length !== 10) {
+        resEl.innerHTML = '<div class="error">Enter a valid 10-digit mobile number.</div>';
+        return;
+      }
+
+      const btn = document.getElementById('staffCheckBtn');
+      btn.disabled = true;
+      btn.textContent = 'Checking...';
+
+      try {
+        const data = await apiCall({ action: 'checkPhone', phone, spend });
+        if (data.status === 'new') {
+          newBox.classList.remove('hidden');
+        } else if (data.status === 'returning') {
+          renderStaffCustomerCard(data);
+          document.getElementById('staffPhone').value = '';
+          document.getElementById('staffSpend').value = '';
+          refreshDashboard();
+        } else {
+          resEl.innerHTML = `<div class="error">${data.message || 'Error'}</div>`;
+        }
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Log Visit at Counter';
+      }
+    }
+
+    async function staffQuickRegister() {
+      const phone = document.getElementById('staffPhone').value.replace(/\D/g, '');
+      const name = document.getElementById('staffName').value.trim();
+      const dob = document.getElementById('staffDob').value;
+      const spend = Number(document.getElementById('staffSpend').value) || 0;
+
+      if (!name || !dob) {
+        alert('Enter customer name and DOB.');
+        return;
+      }
+
+      const btn = document.getElementById('staffRegBtn');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+
+      try {
+        const data = await apiCall({ action: 'register', phone, name, dob, spend });
+        if (data.status === 'registered') {
+          document.getElementById('staffNewFields').classList.add('hidden');
+          document.getElementById('staffPhone').value = '';
+          document.getElementById('staffName').value = '';
+          document.getElementById('staffDob').value = '';
+          document.getElementById('staffSpend').value = '';
+          renderStaffCustomerCard(data);
+          refreshDashboard();
+        } else {
+          alert(data.message || 'Could not register.');
+        }
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save & Log Visit #1';
+      }
+    }
+
+    function renderStaffCustomerCard(c) {
+      const resEl = document.getElementById('staffResult');
+      resEl.innerHTML = '';
+
+      const box = document.createElement('div');
+      box.className = 'list-item';
+      box.style.flexDirection = 'column';
+      box.style.alignItems = 'stretch';
+
+      const top = document.createElement('div');
+      top.style.display = 'flex';
+      top.style.justifyContent = 'space-between';
+      top.style.alignItems = 'center';
+
+      const title = document.createElement('strong');
+      title.textContent = `${c.name} (${c.phone})`;
+
+      const badge = document.createElement('span');
+      badge.className = 'badge' + (c.rewardUnlocked ? ' badge-green' : '');
+      badge.textContent = c.rewardUnlocked ? `🎉 ${CONFIG.DISCOUNT_TEXT} READY` : `Visit ${c.visitCount}/${CONFIG.LOYALTY_TARGET}`;
+      top.append(title, badge);
+
+      const note = document.createElement('div');
+      note.style.fontSize = '0.8rem';
+      note.style.color = '#785a4a';
+      note.textContent = (c.isBirthdayToday ? '🎂 Birthday Today! • ' : '') +
+        (c.alreadyCountedToday ? 'Already checked in today.' : 'Visit logged successfully!');
+
+      box.append(top, note);
+
+      if (c.rewardUnlocked) {
+        const rBtn = document.createElement('button');
+        rBtn.className = 'btn-green btn-sm';
+        rBtn.style.width = '100%';
+        rBtn.textContent = `Mark ${CONFIG.DISCOUNT_TEXT} Redeemed`;
+        rBtn.onclick = async () => {
+          await redeemReward(c.phone);
+          resEl.innerHTML = '';
+        };
+        box.appendChild(rBtn);
+      }
+
+      resEl.appendChild(box);
+    }
+
+    function renderBirthdays(data) {
+      const todayEl = document.getElementById('todayBdayList');
+      const upEl = document.getElementById('upcomingBdayList');
+
+      // Today
+      if (!data.birthdaysToday.length) {
+        todayEl.textContent = `No birthdays today (${data.today}).`;
+      } else {
+        todayEl.innerHTML = '';
+        data.birthdaysToday.forEach((b) => {
+          const msg = `Happy Birthday ${b.name}! 🎂🎉 Warm wishes from ${CONFIG.SHOP_NAME}, Devanur Koot Road! Drop by today to celebrate with fresh cakes & sweets — enjoy a special birthday treat on us!`;
+          todayEl.appendChild(buildBdayRow(b.name, `${b.phone} • ${b.visitCount} visits`, b.phone, msg, 'Wish 🎉'));
+        });
+      }
+
+      // Upcoming 7 Days (Cake Pre-Order Pitch)
+      if (!data.upcomingBirthdays.length) {
+        upEl.textContent = 'No upcoming birthdays in the next 7 days.';
+      } else {
+        upEl.innerHTML = '';
+        data.upcomingBirthdays.forEach((b) => {
+          const dayLabel = b.daysAhead === 1 ? 'Tomorrow' : `In ${b.daysAhead} days`;
+          const msg = `Hi ${b.name}! 🎂 Your birthday is coming up (${dayLabel})! Pre-book your custom birthday cake at ${CONFIG.SHOP_NAME}, Devanur Koot Road and enjoy a special loyal-customer discount! Reply here to book your flavour.`;
+          upEl.appendChild(buildBdayRow(b.name, `${dayLabel} • ${b.phone}`, b.phone, msg, 'Cake Offer 🍰'));
+        });
+      }
+    }
+
+    function buildBdayRow(name, sub, phone, msg, btnLabel) {
+      const item = document.createElement('div');
+      item.className = 'list-item';
+
+      const info = document.createElement('div');
+      const strong = document.createElement('strong');
+      strong.textContent = name;
+      const meta = document.createElement('div');
+      meta.style.fontSize = '0.78rem';
+      meta.style.color = '#785a4a';
+      meta.textContent = sub;
+      info.append(strong, meta);
+
+      const link = document.createElement('a');
+      link.className = 'wa-pill';
+      link.href = `https://wa.me/91${phone}?text=${encodeURIComponent(msg)}`;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = btnLabel;
+
+      item.append(info, link);
+      return item;
+    }
+
+    function renderSearchList() {
+      const container = document.getElementById('searchResults');
+      if (!cachedDashboard) return;
+      const q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+      const matches = cachedDashboard.customers.filter((c) =>
+        c.name.toLowerCase().includes(q) || c.phone.includes(q)
+      ).slice(0, 30);
+
+      container.innerHTML = '';
+      if (!matches.length) {
+        container.textContent = 'No customers found.';
+        return;
+      }
+
+      matches.forEach((c) => {
+        const item = document.createElement('div');
+        item.className = 'list-item';
+
+        const info = document.createElement('div');
+        const strong = document.createElement('strong');
+        strong.textContent = c.name;
+        const meta = document.createElement('div');
+        meta.style.fontSize = '0.76rem';
+        meta.style.color = '#785a4a';
+        meta.textContent = `${c.phone} • Visits: ${c.visitCount}/${CONFIG.LOYALTY_TARGET}` +
+          (c.totalSpend > 0 ? ` • ₹${c.totalSpend}` : '');
+        info.append(strong, meta);
+
+        const right = document.createElement('div');
+        if (c.visitCount >= CONFIG.LOYALTY_TARGET) {
+          const btn = document.createElement('button');
+          btn.className = 'btn-green btn-sm';
+          btn.textContent = 'Redeem';
+          btn.onclick = () => redeemReward(c.phone);
+          right.appendChild(btn);
+        } else {
+          const badge = document.createElement('span');
+          badge.className = 'badge';
+          badge.textContent = `${c.visitCount}★`;
+          right.appendChild(badge);
+        }
+
+        item.append(info, right);
+        container.appendChild(item);
+      });
+    }
+
     function closeAdmin() {
+      activeStaffPin = null;
       showSection('stepPhone');
     }
 
@@ -593,6 +1020,38 @@
       ['stepPhone', 'stepRegister', 'stepPay', 'stepAdmin'].forEach((s) => {
         document.getElementById(s).classList.toggle('hidden', s !== id);
       });
+    }
+
+    // Lightweight Confetti Celebration
+    function launchConfetti() {
+      const canvas = document.getElementById('confettiCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const colors = ['#f59e0b', '#b91c1c', '#15803d', '#5c2410', '#f472b6'];
+      const pieces = Array.from({ length: 70 }, () => ({
+        x: Math.random() * canvas.width,
+        y: -20 - Math.random() * 120,
+        r: 4 + Math.random() * 5,
+        dx: (Math.random() - 0.5) * 3,
+        dy: 3 + Math.random() * 4,
+        color: colors[Math.floor(Math.random() * colors.length)]
+      }));
+
+      let frames = 0;
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach((p) => {
+          ctx.fillStyle = p.color;
+          ctx.fillRect(p.x, p.y, p.r, p.r * 1.4);
+          p.x += p.dx;
+          p.y += p.dy;
+        });
+        frames++;
+        if (frames < 110) requestAnimationFrame(draw);
+        else ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      draw();
     }
   </script>
 </body>
