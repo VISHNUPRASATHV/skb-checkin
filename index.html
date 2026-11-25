@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Super King's Bakery — Check-In &amp; Pay</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root {
+      --primary: #5c2410;       /* Rich bakery chocolate brown */
+      --primary-dark: #3e1608;
+      --gold: #d99b26;          /* Crown gold */
+      --gold-light: #fef3c7;
+      --ruby: #b91c1c;          /* Crown ruby accent */
+      --green: #15803d;
+      --bg: #fffaf0;            /* Warm cream background */
+      --card: #ffffff;
+      --text: #2b1810;
+      --muted: #785a4a;
+      --border: #ecdcc8;
+    }
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top, #fff7e0 0%, var(--bg) 60%, #f9efe0 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card);
+      border-radius: 20px;
+      padding: 24px 22px;
+      box-shadow: 0 12px 32px rgba(92, 36, 16, 0.12);
+      border: 1px solid var(--border);
+      border-top: 5px solid var(--gold);
+    }
+
+    /* Header & Logo */
+    .brand-header {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    .logo-img {
+      width: 118px;
+      height: 118px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: #fff;
+      padding: 4px;
+      box-shadow: 0 4px 14px rgba(92, 36, 16, 0.12);
+      margin-bottom: 10px;
+    }
+    .logo-fallback {
+      display: none;
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 10px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f59e0b, #b45309);
+      color: #fff;
+      font-weight: 800;
+      font-size: 1.3rem;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: 1px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 1.45rem;
+      color: var(--primary);
+      letter-spacing: 0.2px;
+    }
+    .address {
+      margin: 4px 0 0;
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .offer-pill {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: var(--gold-light);
+      color: var(--primary);
+      font-size: 0.8rem;
+      font-weight: 700;
+      border: 1px solid #f5d08a;
+    }
+
+    /* Form Controls */
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin: 12px 0 6px;
+      color: var(--primary);
+    }
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-size: 1rem;
+      outline: none;
+      background: #fffdf9;
+      color: var(--text);
+    }
+    input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(217, 155, 38, 0.16);
+    }
+    button {
+      width: 100%;
+      padding: 13px;
+      margin-top: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--primary);
+      color: #fff;
+      transition: opacity 0.15s ease;
+    }
+    button:active { opacity: 0.88; }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
+    .btn-green { background: var(--green); }
+    .btn-outline {
+      background: #fff;
+      color: var(--primary);
+      border: 1.5px solid var(--border);
+      margin-top: 10px;
+      font-weight: 600;
+    }
+    .hidden { display: none; }
+    .error {
+      color: var(--ruby);
+      font-size: 0.85rem;
+      margin-top: 8px;
+      text-align: center;
+      font-weight: 500;
+    }
+    .helper-text {
+      margin: 0 0 10px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    /* Loyalty Tracker */
+    .loyalty-box {
+      background: #fffbeb;
+      border: 1.5px solid #fde68a;
+      border-radius: 14px;
+      padding: 14px;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+    .stamps {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 10px 0;
+      flex-wrap: wrap;
+    }
+    .stamp {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px dashed #d99b26;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #b45309;
+      background: #fff;
+    }
+    .stamp.filled {
+      background: linear-gradient(135deg, #f59e0b, #b45309);
+      border: 2px solid #b45309;
+      color: #fff;
+    }
+    .reward-banner {
+      background: #dcfce7;
+      border: 1.5px solid #22c55e;
+      color: #166534;
+      border-radius: 14px;
+      padding: 12px;
+      text-align: center;
+      margin-bottom: 14px;
+      font-weight: 700;
+    }
+
+    /* UPI Section */
+    .qr-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #fffdf9;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 12px;
+    }
+    #qrcode {
+      padding: 10px;
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid #f3e8d8;
+    }
+    .upi-id-text {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: var(--primary);
+      font-family: monospace;
+      font-weight: 600;
+    }
+    .row-btns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      width: 100%;
+      margin-top: 6px;
+    }
+
+    /* Admin / Birthday List */
+    .footer-link {
+      margin-top: 16px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-decoration: underline;
+      cursor: pointer;
+      background: none;
+      border: none;
+      width: auto;
+      padding: 4px;
+    }
+    .bday-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-top: 10px;
+      background: #fffdf9;
+    }
+    .wa-btn {
+      background: #25d366;
+      color: #fff;
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand-header">
+      <img
+        src="logo.png"
+        alt="Super King's Bakery Logo"
+        class="logo-img"
+        onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='flex';"
+      />
+      <div id="logoFallback" class="logo-fallback">SKB</div>
+      <h1 id="shopTitle">Super King's Bakery</h1>
+      <p class="address" id="shopAddress">Devanur Koot Road &bull; Since 2014</p>
+      <div class="offer-pill" id="shopSub">Visit 5 times &amp; get 10% OFF</div>
+    </div>
+
+    <!-- STEP 1: Phone Entry -->
+    <div id="stepPhone">
+      <label for="phoneInput">Mobile Number</label>
+      <input id="phoneInput" type="tel" inputmode="numeric" maxlength="10" placeholder="Enter 10-digit mobile number" />
+      <button id="checkBtn" onclick="checkPhone()">Continue</button>
+      <div id="phoneError" class="error"></div>
+    </div>
+
+    <!-- STEP 2: New Customer Form -->
+    <div id="stepRegister" class="hidden">
+      <p class="helper-text">First time here? Register once to collect visit rewards &amp; birthday treats!</p>
+      <label for="nameInput">Full Name</label>
+      <input id="nameInput" type="text" placeholder="Your Name" />
+      <label for="dobInput">Date of Birth (for birthday wishes &amp; offers)</label>
+      <input id="dobInput" type="date" />
+      <button id="regBtn" onclick="registerCustomer()">Check In &amp; Pay</button>
+      <button class="btn-outline" onclick="resetFlow()">Back</button>
+      <div id="regError" class="error"></div>
+    </div>
+
+    <!-- STEP 3: Loyalty Status + UPI Payment -->
+    <div id="stepPay" class="hidden">
+      <div id="rewardBanner" class="reward-banner hidden">
+        <div id="rewardText">Reward Unlocked! Show this screen at the counter.</div>
+        <button class="btn-outline" style="margin-top:8px; padding:7px; font-size:0.8rem;" onclick="redeemReward()">
+          Staff: Mark Discount Used
+        </button>
+      </div>
+
+      <div class="loyalty-box">
+        <div id="welcomeMsg" style="font-weight:700; color:var(--primary);"></div>
+        <div id="stampsContainer" class="stamps"></div>
+        <div id="visitInfo" style="font-size:0.85rem; color:var(--muted);"></div>
+      </div>
+
+      <label for="amountInput">Bill Amount ₹ (Optional)</label>
+      <input id="amountInput" type="number" inputmode="decimal" min="1" placeholder="Enter bill amount to pre-fill UPI" oninput="renderUPI()" />
+
+      <div class="qr-wrap">
+        <div id="qrcode"></div>
+        <div class="upi-id-text" id="upiDisplay"></div>
+        <a id="upiPayLink" style="width:100%; text-decoration:none;">
+          <button type="button" class="btn-green">Pay via UPI App</button>
+        </a>
+        <div class="row-btns">
+          <button type="button" class="btn-outline" onclick="copyUPI()" id="copyBtn">Copy UPI ID</button>
+          <button type="button" class="btn-outline" onclick="downloadQR()">Download QR</button>
+        </div>
+      </div>
+
+      <button class="btn-outline" onclick="resetFlow()">New Customer</button>
+    </div>
+
+    <!-- STAFF VIEW: Today's Birthdays -->
+    <div id="stepAdmin" class="hidden">
+      <h2 style="font-size:1.1rem; margin:0 0 8px; color:var(--primary);">🎂 Today's Birthdays</h2>
+      <div id="birthdayList" style="font-size:0.9rem; color:var(--muted);">Loading...</div>
+      <button class="btn-outline" onclick="closeAdmin()">Back to Check-In</button>
+    </div>
+  </div>
+
+  <button class="footer-link" onclick="openAdmin()">Staff: Today's Birthdays</button>
+
+  <script>
+    // ================= SHOP CONFIGURATION =================
+    const CONFIG = {
+      SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxv2HfaVJV9ZaDor0lL45vLu-7i49M7l5ciXG_e09Jax8iDHFEnEe-UHGdiZ7iPtli0pg/exec',
+      SHOP_NAME: "Super King's Bakery",
+      SHOP_ADDRESS: 'Devanur Koot Road • Since 2014',
+      UPI_ID: 'vvichuzz229-1@okaxis',
+      LOYALTY_TARGET: 5,           // Must match LOYALTY_TARGET in Code.gs
+      DISCOUNT_TEXT: '10% OFF'     // Change to your preferred reward (e.g., "₹50 OFF" or "Free Pastry")
+    };
+    // ======================================================
+
+    let currentCustomer = null;
+
+    document.getElementById('shopTitle').textContent = CONFIG.SHOP_NAME;
+    document.getElementById('shopAddress').textContent = CONFIG.SHOP_ADDRESS;
+    document.getElementById('shopSub').textContent =
+      `👑 Visit ${CONFIG.LOYALTY_TARGET} times & get ${CONFIG.DISCOUNT_TEXT}`;
+
+    document.getElementById('phoneInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') checkPhone();
+    });
+
+    async function apiCall(payload) {
+      const res = await fetch(CONFIG.SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+      return res.json();
+    }
+
+    async function checkPhone() {
+      const phone = document.getElementById('phoneInput').value.replace(/\D/g, '');
+      const errEl = document.getElementById('phoneError');
+      errEl.textContent = '';
+
+      if (phone.length !== 10) {
+        errEl.textContent = 'Please enter a valid 10-digit mobile number.';
+        return;
+      }
+
+      const btn = document.getElementById('checkBtn');
+      btn.disabled = true;
+      btn.textContent = 'Checking...';
+
+      try {
+        const data = await apiCall({ action: 'checkPhone', phone });
+        if (data.status === 'new') {
+          showSection('stepRegister');
+        } else if (data.status === 'returning') {
+          currentCustomer = data;
+          showPaymentScreen(data);
+        } else {
+          errEl.textContent = data.message || 'Something went wrong.';
+        }
+      } catch (e) {
+        errEl.textContent = 'Connection error. Please ensure the Apps Script is deployed to "Anyone".';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Continue';
+      }
+    }
+
+    async function registerCustomer() {
+      const phone = document.getElementById('phoneInput').value.replace(/\D/g, '');
+      const name = document.getElementById('nameInput').value.trim();
+      const dob = document.getElementById('dobInput').value;
+      const errEl = document.getElementById('regError');
+      errEl.textContent = '';
+
+      if (!name || !dob) {
+        errEl.textContent = 'Please enter both your name and date of birth.';
+        return;
+      }
+
+      const btn = document.getElementById('regBtn');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+
+      try {
+        const data = await apiCall({ action: 'register', phone, name, dob });
+        if (data.status === 'registered') {
+          currentCustomer = data;
+          showPaymentScreen(data);
+        } else {
+          errEl.textContent = data.message || 'Could not save details.';
+        }
+      } catch (e) {
+        errEl.textContent = 'Network error. Please try again.';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Check In & Pay';
+      }
+    }
+
+    function showPaymentScreen(customer) {
+      showSection('stepPay');
+      document.getElementById('welcomeMsg').textContent = `Welcome, ${customer.name}!`;
+
+      const stampsEl = document.getElementById('stampsContainer');
+      stampsEl.innerHTML = '';
+      for (let i = 1; i <= CONFIG.LOYALTY_TARGET; i++) {
+        const div = document.createElement('div');
+        div.className = 'stamp' + (i <= customer.visitCount ? ' filled' : '');
+        div.textContent = i <= customer.visitCount ? '★' : i;
+        stampsEl.appendChild(div);
+      }
+
+      const remaining = Math.max(0, CONFIG.LOYALTY_TARGET - customer.visitCount);
+      const visitNote = customer.alreadyCountedToday ? ' (Today already counted)' : '';
+      document.getElementById('visitInfo').textContent = remaining === 0
+        ? `Visit #${customer.visitCount} — You unlocked ${CONFIG.DISCOUNT_TEXT}!`
+        : `Visit #${customer.visitCount} — ${remaining} more visit(s) for ${CONFIG.DISCOUNT_TEXT}${visitNote}`;
+
+      const rewardBanner = document.getElementById('rewardBanner');
+      if (customer.rewardUnlocked) {
+        document.getElementById('rewardText').textContent =
+          `🎉 ${CONFIG.DISCOUNT_TEXT} Unlocked! Show this screen at the counter.`;
+        rewardBanner.classList.remove('hidden');
+      } else {
+        rewardBanner.classList.add('hidden');
+      }
+
+      document.getElementById('upiDisplay').textContent = CONFIG.UPI_ID;
+      renderUPI();
+    }
+
+    function renderUPI() {
+      const amount = document.getElementById('amountInput').value.trim();
+      let upiUri = `upi://pay?pa=${encodeURIComponent(CONFIG.UPI_ID)}&pn=${encodeURIComponent(CONFIG.SHOP_NAME)}&cu=INR`;
+      if (amount && Number(amount) > 0) {
+        upiUri += `&am=${encodeURIComponent(amount)}`;
+      }
+
+      document.getElementById('upiPayLink').href = upiUri;
+
+      const qrEl = document.getElementById('qrcode');
+      qrEl.innerHTML = '';
+      new QRCode(qrEl, { text: upiUri, width: 190, height: 190 });
+    }
+
+    function copyUPI() {
+      navigator.clipboard.writeText(CONFIG.UPI_ID);
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = 'Copied!';
+      setTimeout(() => (btn.textContent = 'Copy UPI ID'), 1800);
+    }
+
+    function downloadQR() {
+      const canvas = document.querySelector('#qrcode canvas');
+      const img = document.querySelector('#qrcode img');
+      const dataUrl = canvas ? canvas.toDataURL('image/png') : (img ? img.src : null);
+      if (!dataUrl) return;
+      const a = document.createElement('a');
+      a.download = 'Super_Kings_Bakery_UPI_QR.png';
+      a.href = dataUrl;
+      a.click();
+    }
+
+    async function redeemReward() {
+      const pin = prompt('Enter 4-digit Staff PIN to mark discount as redeemed:');
+      if (!pin || !currentCustomer) return;
+
+      const data = await apiCall({
+        action: 'redeem',
+        phone: currentCustomer.phone,
+        pin
+      });
+
+      if (data.status === 'redeemed') {
+        currentCustomer.visitCount = data.visitCount;
+        currentCustomer.rewardUnlocked = data.rewardUnlocked;
+        showPaymentScreen(currentCustomer);
+        alert('Discount redeemed and loyalty counter updated!');
+      } else {
+        alert(data.message || 'Invalid PIN');
+      }
+    }
+
+    async function openAdmin() {
+      const pin = prompt('Enter 4-digit Staff PIN:');
+      if (!pin) return;
+
+      showSection('stepAdmin');
+      const listEl = document.getElementById('birthdayList');
+      listEl.textContent = "Checking today's birthdays...";
+
+      try {
+        const data = await apiCall({ action: 'birthdays', pin });
+        if (data.status !== 'ok') {
+          alert(data.message || 'Invalid PIN');
+          closeAdmin();
+          return;
+        }
+
+        if (!data.birthdays.length) {
+          listEl.textContent = `No customer birthdays today (${data.today}).`;
+          return;
+        }
+
+        listEl.innerHTML = '';
+        data.birthdays.forEach((b) => {
+          const msg = `Happy Birthday ${b.name}! 🎂🎉 Warm wishes from ${CONFIG.SHOP_NAME}, Devanur Koot Road! Drop by to celebrate with fresh cakes & sweets — enjoy a special birthday treat on us!`;
+          const waUrl = `https://wa.me/91${b.phone}?text=${encodeURIComponent(msg)}`;
+
+          const item = document.createElement('div');
+          item.className = 'bday-item';
+
+          const info = document.createElement('div');
+          const strong = document.createElement('strong');
+          strong.textContent = b.name;
+          const meta = document.createElement('div');
+          meta.style.fontSize = '0.8rem';
+          meta.style.color = '#785a4a';
+          meta.textContent = `${b.phone} • ${b.visitCount} visits`;
+          info.append(strong, meta);
+
+          const link = document.createElement('a');
+          link.className = 'wa-btn';
+          link.href = waUrl;
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          link.textContent = 'WhatsApp';
+
+          item.append(info, link);
+          listEl.appendChild(item);
+        });
+      } catch (e) {
+        listEl.textContent = 'Failed to load birthdays.';
+      }
+    }
+
+    function closeAdmin() {
+      showSection('stepPhone');
+    }
+
+    function resetFlow() {
+      currentCustomer = null;
+      document.getElementById('phoneInput').value = '';
+      document.getElementById('nameInput').value = '';
+      document.getElementById('dobInput').value = '';
+      document.getElementById('amountInput').value = '';
+      showSection('stepPhone');
+    }
+
+    function showSection(id) {
+      ['stepPhone', 'stepRegister', 'stepPay', 'stepAdmin'].forEach((s) => {
+        document.getElementById(s).classList.toggle('hidden', s !== id);
+      });
+    }
+  </script>
+</body>
+</html>
